@@ -26,25 +26,41 @@ exports.onCreateNode = ({ node, getNode, actions }) => {
 exports.createPages = ({ graphql, actions }) => {
   const { createPage } = actions
   return graphql(`
-    {
-      allMarkdownRemark(sort: {fields: frontmatter___date, order: DESC}) {
-        edges {
-          node {
-            fields{
-              slug
-            }
-            frontmatter {
-              background
-              category
-              date(locale: "pt-br", formatString: "DD [de] MMM [de] YYYY")
-              description
-              title
-            }
-            timeToRead
+  {
+    allMarkdownRemark(sort: {fields: frontmatter___date, order: DESC}) {
+      edges {
+        node {
+          fields {
+            slug
+          }
+          frontmatter {
+            background
+            category
+            date(locale: "pt-br", formatString: "DD [de] MMM [de] YYYY")
+            description
+            title
+          }
+          timeToRead
+        }
+        next {
+          frontmatter {
+            title
+          }
+          fields {
+            slug
+          }
+        }
+        previous {
+          frontmatter {
+            title
+          }
+          fields {
+            slug
           }
         }
       }
     }
+  }
   `).then(result => {
     const posts = result.data.allMarkdownRemark.edges
 
@@ -56,6 +72,8 @@ exports.createPages = ({ graphql, actions }) => {
           // Data passed to context is available
           // in page queries as GraphQL variables.
           slug: node.fields.slug,
+          previoursPost: next,
+          nextPost: previous,
         },
       })
     })
